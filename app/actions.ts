@@ -6,13 +6,14 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const signUpAction = async (formData: FormData) => {
+  const firstName = formData.get("firstName")?.toString();
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const supabase = createClient();
   const origin = headers().get("origin");
 
-  if (!email || !password) {
-    return { error: "Email and password are required" };
+  if (!firstName || !email || !password) {
+    return { error: "Name, email and password are required" };
   }
 
   const { error } = await supabase.auth.signUp({
@@ -20,6 +21,7 @@ export const signUpAction = async (formData: FormData) => {
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
+      data: { first_name: firstName },
     },
   });
 
@@ -49,7 +51,7 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect("/protected");
+  return redirect("/agent");
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
