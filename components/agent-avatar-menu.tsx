@@ -39,7 +39,7 @@ export default function AvatarMenu({ user }: AgentToolbarProps) {
             <Button 
                 icon={<Avatar label={initial} size='normal' shape="circle" 
     className="pink-avatar"/>} 
-                className="p-button-rounded p-button-text" 
+                className="p-button-rounded " 
                 onClick={(event) => menuRight.current?.toggle(event)}
                 aria-controls="popup_menu_right" 
                 aria-haspopup

@@ -4,6 +4,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { Avatar } from 'primereact/avatar';
 import { SupabaseUser } from '../types/supabase';
 import AvatarMenu from './agent-avatar-menu';
+import { Tag } from 'primereact/tag';
 
 interface AgentToolbarProps {
     user: SupabaseUser;
@@ -16,6 +17,7 @@ export default function AgentToolbar({ user }: AgentToolbarProps) {
           <span className="pink-text" style={{ marginLeft: "4px" }}>PINK</span>
           <span className="carbon-text">CARBON</span>
         </span>
+        <Tag className="ml-2" value="BETA"></Tag>
         </React.Fragment>
     );
 
