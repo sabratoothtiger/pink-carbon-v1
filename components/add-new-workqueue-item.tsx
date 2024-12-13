@@ -39,7 +39,7 @@ const AddNewItemSidebar: React.FC<AddNewItemSidebarProps> = ({
       received_at: newItem.received_at || new Date(),
       position: newPosition
     });
-    // TODO add loading to ensure that we can save the new value 
+    // TODO add loading to ensure that we can save the new value without it failing
     setNewItem({ ...newItem, identifier: null, received_at: new Date(), position: null}); // Reset form
     
   };
