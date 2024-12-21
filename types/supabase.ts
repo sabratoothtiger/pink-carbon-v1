@@ -12,6 +12,7 @@ export interface SupabaseUser {
 
 
  export interface WorkqueueItem {
+    id: string | null;
     position: number | null;
     received_at: Date;
     last_updated_at: Date;

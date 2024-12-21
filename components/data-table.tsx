@@ -1,77 +1,45 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { DataTable, DataTableDataSelectableEvent } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { StatusItem, WorkqueueItem } from '@/types/supabase';
-import { getCompletedStatusId } from '@/utils/helpers';
-import { Tag } from 'primereact/tag';
-import { getStatusData, getWorkqueueData } from '@/utils/supabase/fetch-data';
-import { InputSwitch } from 'primereact/inputswitch';
-import AddNewItemSidebar from './add-new-workqueue-item';
-import { Button } from 'primereact/button';
-import { ToggleButton } from 'primereact/togglebutton';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { format } from 'date-fns';
-import { createClient } from '@/utils/supabase/client';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  DataTable,
+  DataTableDataSelectableEvent,
+  DataTableRowEditCompleteEvent,
+} from "primereact/datatable";
+import { Column, ColumnEditorOptions } from "primereact/column";
+import { StatusItem, SupabaseUser, WorkqueueItem } from "@/types/supabase";
+import { getCompletedStatusId } from "@/utils/helpers";
+import { Tag } from "primereact/tag";
+import { getStatusData, getWorkqueueData } from "@/utils/supabase/fetch-data";
+import { InputSwitch } from "primereact/inputswitch";
+import AddNewItemSidebar from "./add-new-workqueue-item";
+import { Button } from "primereact/button";
+import { ToggleButton } from "primereact/togglebutton";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { format } from "date-fns";
+import { createClient } from "@/utils/supabase/client";
+import { InputText } from "primereact/inputtext";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 
+interface WorkqueueProps {
+  user: SupabaseUser;
+}
 
-export default function Workqueue() {
+export default function Workqueue({ user }: WorkqueueProps) {
   const [items, setItems] = useState<WorkqueueItem[]>([]);
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
   const [loading, setLoading] = useState(true);
   const isCellSelectable = (event: DataTableDataSelectableEvent) =>
-    event.data.field === 'identifier' || event.data.field === 'last_updated_at' ? false : true;
+    event.data.field === "identifier" || event.data.field === "last_updated_at"
+      ? false
+      : true;
 
   const [showCompleted, setShowCompleted] = useState(false);
   const [showAddItemSidebar, setShowAddItemSidebar] = useState(false);
 
-    // Initialize the Supabase client on the client side
-    const supabase = createClient();
-
-  const getSeverity = (statusId: number) => {
-    switch (statusId) {
-      case 3:  // Awaiting info
-        return 'warning';
-      case 5:  // Completed
-        return 'success';
-      case 6:  // Extended
-        return 'warning';
-      default:
-        return 'info';
-    }
-  };
-
-  function getStatusNameInternalById(statusId: number): string | null {
-    const status = statuses.find((status) => status.id === statusId);
-
-    if (status) {
-      return status.name_internal;
-    }
-
-    return "Unknown Status";
-  }
-
-  const statusBodyTemplate = (rowData: WorkqueueItem) => {
-    return <Tag value={getStatusNameInternalById(rowData.status_id)} severity={getSeverity(rowData.status_id)} />;
-  };
-
-  const receivedDateBodyTemplate = (rowData: WorkqueueItem) => {
-    return rowData.received_at ? format(new Date(rowData.received_at), 'MM/dd/yyyy') : '';
-  };
-
-  const updatedDateBodyTemplate = (rowData: WorkqueueItem) => {
-    return rowData.last_updated_at ? format(new Date(rowData.last_updated_at), 'MM/dd/yyyy') : '';
-  };
-
-  const columns: { field: keyof WorkqueueItem; header: string; body?: (rowData: WorkqueueItem) => JSX.Element | string; }[] = [
-    { field: 'position', header: 'Position' },
-    { field: 'identifier', header: 'Identifier' },
-    { field: 'status_id', header: 'Status', body: statusBodyTemplate },
-    { field: 'received_at', header: 'Received on', body: receivedDateBodyTemplate },
-    { field: 'last_updated_at', header: 'Last updated on', body: updatedDateBodyTemplate },
-    { field: 'extension_date_id', header: 'Extension date' }
-  ];
+  // Initialize the Supabase client on the client side
+  const supabase = createClient();
+  const { user_metadata, email } = user;
 
   const completedStatusId = getCompletedStatusId();
 
@@ -88,27 +56,206 @@ export default function Workqueue() {
     fetchData();
   }, []);
 
-  const dynamicColumns = columns.map((col) => (
+  const getSeverity = (statusId: number) => {
+    switch (statusId) {
+      case 1: // Received
+        return "secondary";
+      case 3: // Awaiting info
+        return "warning";
+      case 5: // Completed
+        return "success";
+      case 6: // Extended
+        return "danger";
+      default:
+        return "info";
+    }
+  };
+
+  function getStatusNameInternalById(statusId: number): string | null {
+    const status = statuses.find((status) => status.id === statusId);
+
+    return status ? status.name_internal : "Unknown Status";
+  }
+
+  const statusBodyTemplate = (rowData: WorkqueueItem) => {
+    return (
+      <Tag
+        value={getStatusNameInternalById(rowData.status_id)}
+        severity={getSeverity(rowData.status_id)}
+      />
+    );
+  };
+
+  const receivedDateBodyTemplate = (rowData: WorkqueueItem) => {
+    return rowData.received_at
+      ? format(new Date(rowData.received_at), "MM/dd/yyyy")
+      : "";
+  };
+
+  const updatedDateBodyTemplate = (rowData: WorkqueueItem) => {
+    return rowData.last_updated_at
+      ? format(new Date(rowData.last_updated_at), "MM/dd/yyyy")
+      : "";
+  };
+
+  const textEditor = (options: ColumnEditorOptions) => {
+    return (
+      <InputText
+        type="text"
+        value={options.value}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          options.editorCallback!(e.target.value)
+        }
+      />
+    );
+  };
+
+  const statusEditor = (options: ColumnEditorOptions) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={statuses} // Make sure this contains your status objects
+        onChange={(e: DropdownChangeEvent) => options.editorCallback!(e.value)} // Trigger editor callback on selection
+        placeholder="Select a Status"
+        itemTemplate={(option: StatusItem) => {
+          // Custom template for each dropdown item
+          return (
+            <Tag
+              value={option.name_internal}
+              severity={getSeverity(option.id)}
+            ></Tag>
+          );
+        }}
+        optionLabel="name_internal" // This is the property to display in the dropdown
+        optionValue="id" // This is the property that will be used as the value
+      />
+    );
+  };
+
+  const onRowEditComplete = async (e: DataTableRowEditCompleteEvent) => {
+    let _items = [...items];
+    let { newData, index } = e;
+
+    // Update database
+    const updatedItem = newData as WorkqueueItem;
+    if ((updatedItem.status_id === completedStatusId)) {
+      updatedItem.position = null;
+    }
+    const { data: singleUpdate, error } = await supabase
+      .from("workqueue")
+      .update({
+        status_id: updatedItem.status_id,
+        identifier: updatedItem.identifier,
+        received_at: updatedItem.received_at,
+        position: updatedItem.position,
+        last_updated_at: new Date().toISOString(),
+      })
+      .eq("id", updatedItem.id); // Match the row by its unique identifier
+
+    // Check for any error during the update
+    if (error) {
+      console.error("Error updating workqueue item:", error);
+      // Optionally show a message to the user that the update failed
+    } else {
+      let newPosition = 0;
+      _items[index] = updatedItem;
+      const reorderedItems = _items.map((item) => {
+        if (item.status_id === completedStatusId) {
+          return { ...item, position: null }; // Keep position null for completed items
+        } else {
+          newPosition++; // Increment position for all non-completed items
+          return { ...item, position: newPosition };
+        }
+      });
+      // Update the reordered items in the database
+      const { data, error } = await supabase
+        .from("workqueue")
+        .upsert(reorderedItems)
+        .select();
+
+      // Check for any error during the update
+      if (error) {
+        console.error("Error updating positions in workqueue:", error);
+      } else {
+        setItems(reorderedItems);
+      }
+    }
+  };
+
+  const columns: {
+    field: keyof WorkqueueItem;
+    header: string;
+    body?: (rowData: WorkqueueItem) => JSX.Element | string;
+    editor?: (options: ColumnEditorOptions) => JSX.Element | string;
+  }[] = [
+    { field: "position", header: "Position" },
+    { field: "identifier", header: "Identifier"},
+    {
+      field: "status_id",
+      header: "Status",
+      body: statusBodyTemplate,
+      editor: statusEditor,
+    },
+    {
+      field: "received_at",
+      header: "Received on",
+      body: receivedDateBodyTemplate,
+    },
+    {
+      field: "last_updated_at",
+      header: "Last updated on",
+      body: updatedDateBodyTemplate,
+    },
+    { field: "extension_date_id", header: "Extension date" },
+  ];
+
+  let dynamicColumns = columns.map((col) => (
     <Column
       key={col.field}
       columnKey={col.field as string}
       field={col.field as string}
       header={col.header}
       body={col.body}
+      editor={col.editor}
     />
   ));
 
-  const handleRowReorder = (e: any) => {
+  const allowEdit = (rowData: WorkqueueItem) => {
+    return true;
+  };
+
+  const rowEditorColumn = (
+    <Column
+      rowEditor={allowEdit}
+      headerStyle={{ width: "10%", minWidth: "8rem" }}
+      bodyStyle={{ textAlign: "center" }}
+    ></Column>
+  );
+
+  dynamicColumns.push(rowEditorColumn);
+
+  const handleRowReorder = async (e: any) => {
     const reorderedItems = e.value as WorkqueueItem[];
     let newPosition = 0;
-    const updatedItems = reorderedItems.map((item, index) => {
+    const updatedItems = reorderedItems.map((item) => {
       if (item.status_id === completedStatusId) {
         return { ...item, position: null };
       }
       newPosition++;
       return { ...item, position: newPosition };
     });
-    setItems(updatedItems);
+    const { data, error } = await supabase
+      .from("workqueue")
+      .upsert(updatedItems)
+      .select();
+
+    // Check for any error during the update
+    if (error) {
+      console.error("Error updating workqueue item:", error);
+      // Optionally show a message to the user that the update failed
+    } else {
+      setItems(data);
+    }
   };
 
   const handleAddItem = (newItem: WorkqueueItem) => {
@@ -118,12 +265,15 @@ export default function Workqueue() {
         ...newItem,
         status_id: 1, // Default status_id "Received"
         received_at: newItem.received_at || new Date().toISOString(),
+        position: newItem.position,
       },
     ]);
     setShowAddItemSidebar(false);
   };
 
-  const filteredItems = items.filter(item => (showCompleted || item.status_id !== 5));
+  const filteredItems = items.filter(
+    (item) => showCompleted || item.status_id !== 5
+  );
 
   return (
     <div className="card">
@@ -132,19 +282,31 @@ export default function Workqueue() {
       ) : (
         <>
           <div className="flex justify-between mb-2">
-            <Button label="Add New Item" icon="pi pi-plus" onClick={() => setShowAddItemSidebar(true)} />
-            <ToggleButton onLabel="Hide Completed" offLabel="Show all" checked={showCompleted} onChange={(e) => setShowCompleted(e.value)} />
+            <Button
+              label="Add New Item"
+              icon="pi pi-plus"
+              onClick={() => setShowAddItemSidebar(true)}
+            />
+            <ToggleButton
+              onLabel="Hide Completed"
+              offLabel="Show all"
+              checked={showCompleted}
+              onChange={(e) => setShowCompleted(e.value)}
+            />
           </div>
           <DataTable
             value={filteredItems}
             reorderableColumns
             reorderableRows
             onRowReorder={handleRowReorder}
-            tableStyle={{ minWidth: '50rem' }}
+            tableStyle={{ minWidth: "50rem" }}
             stripedRows
             isDataSelectable={isCellSelectable}
+            editMode="row"
+            dataKey="id"
+            onRowEditComplete={onRowEditComplete}
           >
-            <Column rowReorder style={{ width: '3rem' }} />
+            <Column rowReorder style={{ width: "3rem" }} />
             {dynamicColumns}
           </DataTable>
 
@@ -152,6 +314,8 @@ export default function Workqueue() {
             visible={showAddItemSidebar}
             onHide={() => setShowAddItemSidebar(false)}
             onAddItem={handleAddItem}
+            userId={user_metadata.sub}
+            supabase={supabase}
           />
         </>
       )}
