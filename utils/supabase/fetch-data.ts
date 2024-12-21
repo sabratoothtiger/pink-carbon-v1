@@ -14,7 +14,7 @@ async function getWorkqueueData() {
 }
 
 async function getStatusData() {
-    const { data, error } = await supabase.from('statuses').select('*');
+    const { data, error } = await supabase.from('statuses').select('*').order('id', { ascending: true });
   
     if (error) {
       console.error('Error fetching status data:', error);
