@@ -278,7 +278,7 @@ export default function Workqueue({ user }: WorkqueueProps) {
   };
 
   const filteredItems = items.filter(
-    (item) => showCompleted || item.status_id !== 5
+    (item) => showCompleted || item.status_id !== completedStatusId
   );
 
   return (
