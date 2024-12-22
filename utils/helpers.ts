@@ -1,7 +1,7 @@
 
 
 function getCompletedStatusId() {
-    return 5
+    return 10
 }
 
 export {getCompletedStatusId}

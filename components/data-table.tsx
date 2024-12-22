@@ -62,7 +62,7 @@ export default function Workqueue({ user }: WorkqueueProps) {
         return "secondary";
       case 3: // Awaiting info
         return "warning";
-      case 5: // Completed
+      case completedStatusId: // Completed
         return "success";
       case 6: // Extended
         return "danger";
