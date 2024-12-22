@@ -8,7 +8,7 @@ import {
 } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { StatusItem, SupabaseUser, WorkqueueItem } from "@/types/supabase";
-import { getCompletedStatusId } from "@/utils/helpers";
+import { getAwaitingInfoStatusId, getCompletedStatusId, getExtendedStatusId, getMailedStatusId, getReceivedStatusId } from "@/utils/helpers";
 import { Tag } from "primereact/tag";
 import { getStatusData, getWorkqueueData } from "@/utils/supabase/fetch-data";
 import { InputSwitch } from "primereact/inputswitch";
@@ -41,6 +41,10 @@ export default function Workqueue({ user }: WorkqueueProps) {
   const supabase = createClient();
   const { user_metadata, email } = user;
 
+  const receivedStatusId = getReceivedStatusId();
+  const awaitingInfoStatusId = getAwaitingInfoStatusId();
+  const extendedStatusId = getExtendedStatusId();
+  const mailedStatusId = getMailedStatusId();
   const completedStatusId = getCompletedStatusId();
 
   // Fetch data once the component mounts
@@ -58,13 +62,15 @@ export default function Workqueue({ user }: WorkqueueProps) {
 
   const getSeverity = (statusId: number) => {
     switch (statusId) {
-      case 1: // Received
+      case receivedStatusId:
         return "secondary";
-      case 3: // Awaiting info
+      case awaitingInfoStatusId: 
         return "warning";
-      case completedStatusId: // Completed
+      case mailedStatusId: 
+        return "warning";
+      case completedStatusId: 
         return "success";
-      case 6: // Extended
+      case extendedStatusId:
         return "danger";
       default:
         return "info";
