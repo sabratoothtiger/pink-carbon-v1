@@ -4,12 +4,15 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { PageProps } from 'next';
 
-interface ForgotPasswordProps {
-  searchParams: { [key: string]: string | string[] };
+interface ForgotPasswordProps extends PageProps {
+  searchParams: { [key: string]: string | string[] } | Promise<any>;
 }
 
-export default function ForgotPassword({searchParams}:ForgotPasswordProps) {
+export default async function ForgotPassword({ searchParams }: ForgotPasswordProps) {
+  // Ensure searchParams is resolved
+  const resolvedSearchParams = await Promise.resolve(searchParams);
   return (
     <>
       <form className="flex-1 flex flex-col w-full gap-2 text-foreground [&>input]:mb-6 min-w-64 max-w-64 mx-auto">
@@ -28,7 +31,7 @@ export default function ForgotPassword({searchParams}:ForgotPasswordProps) {
           <SubmitButton formAction={forgotPasswordAction}>
             Reset Password
           </SubmitButton>
-          <FormMessage message={searchParams} />
+          <FormMessage message={resolvedSearchParams} />
         </div>
       </form>
     </>
