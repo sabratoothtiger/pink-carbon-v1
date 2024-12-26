@@ -1,12 +1,14 @@
-import { createClient } from '@/utils/supabase/client';
-
-const supabase = await createClient();
+import { createClient } from "@/utils/supabase/client";
 
 async function getWorkqueueData() {
-  const { data, error } = await supabase.from('workqueue').select('*').order('position', { ascending: true });
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("workqueue")
+    .select("*")
+    .order("position", { ascending: true });
 
   if (error) {
-    console.error('Error fetching workqueue data:', error);
+    console.error("Error fetching workqueue data:", error);
     return null;
   }
 
@@ -14,36 +16,50 @@ async function getWorkqueueData() {
 }
 
 async function getStatusData() {
-    const { data, error } = await supabase.from('statuses').select('*').order('id', { ascending: true });
-  
-    if (error) {
-      console.error('Error fetching status data:', error);
-      return null;
-    }
-  
-    return data;
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("statuses")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching status data:", error);
+    return null;
   }
 
-  async function getExtensionData() {
-    const { data, error } = await supabase.from('extension_date_options').select('*').order('id', { ascending: true });
-  
-    if (error) {
-      console.error('Error fetching status data:', error);
-      return null;
-    }
-  
-    return data;
-  }
-
-  async function getMaxItemPosition() {
-      const { data, error } = await supabase.rpc("get_max_position");
-
-      if (error) {
-        console.error("Error fetching position:", error);
-        return;
-      }
-
-    return data
+  return data;
 }
 
-export { getWorkqueueData, getStatusData, getExtensionData, getMaxItemPosition };
+async function getExtensionData() {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("extension_date_options")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching status data:", error);
+    return null;
+  }
+
+  return data;
+}
+
+async function getMaxItemPosition() {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("get_max_position");
+
+  if (error) {
+    console.error("Error fetching position:", error);
+    return;
+  }
+
+  return data;
+}
+
+export {
+  getWorkqueueData,
+  getStatusData,
+  getExtensionData,
+  getMaxItemPosition,
+};
