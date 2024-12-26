@@ -28,3 +28,8 @@ export interface StatusItem {
   name_external: string;
   description: string;
 }
+
+export interface ExtensionItem {
+  id: number;
+  name: string;
+}

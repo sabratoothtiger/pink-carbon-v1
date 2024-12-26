@@ -24,6 +24,17 @@ async function getStatusData() {
     return data;
   }
 
+  async function getExtensionData() {
+    const { data, error } = await supabase.from('extension_date_options').select('*').order('id', { ascending: true });
+  
+    if (error) {
+      console.error('Error fetching status data:', error);
+      return null;
+    }
+  
+    return data;
+  }
+
   async function getMaxItemPosition() {
       const { data, error } = await supabase.rpc("get_max_position");
 
@@ -35,4 +46,4 @@ async function getStatusData() {
     return data
 }
 
-export { getWorkqueueData, getStatusData, getMaxItemPosition };
+export { getWorkqueueData, getStatusData, getExtensionData, getMaxItemPosition };

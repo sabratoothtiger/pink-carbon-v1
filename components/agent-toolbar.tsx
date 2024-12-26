@@ -8,16 +8,18 @@ import { Tag } from 'primereact/tag';
 
 interface AgentToolbarProps {
     user: SupabaseUser;
+    teamName: string;
   }
 
-export default function AgentToolbar({ user }: AgentToolbarProps) {
+export default function AgentToolbar({ user, teamName }: AgentToolbarProps) {
     const startContent = (
         <React.Fragment>
         <span className="brand-name" style={{ display: "flex", alignItems: "center" }}>
           <span className="pink-text" style={{ marginLeft: "4px" }}>PINK</span>
           <span className="carbon-text">CARBON</span>
         </span>
-        <Tag className="ml-2" value="BETA"></Tag>
+        <Tag className="ml-2 mr-2" value="BETA"></Tag>
+        <h2 className="p-0 m-0"> | {teamName}</h2>
         </React.Fragment>
     );
 

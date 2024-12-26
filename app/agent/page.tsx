@@ -1,6 +1,5 @@
 import AgentToolbar from "@/components/agent-toolbar";
 import Workqueue from "@/components/data-table";
-import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
 import { SupabaseUser } from "@/types/supabase";
 import { createClient } from "@/utils/supabase/server";
 import { InfoIcon } from "lucide-react";
@@ -19,8 +18,11 @@ export default async function ProtectedPage() {
 
   // Type assertion to match the SupabaseUser type
   const supabaseUser = user as SupabaseUser;
+  
 
-  const supabaseSession = supabase.auth.getSession();  // Get the session object that contains access_token
+  let { data: teamName, error } = await supabase
+    .rpc('get_user_team_name')
+    console.log(teamName)
 
   return (
     <div className="flex-1 w-full flex flex-col ">
@@ -30,7 +32,7 @@ export default async function ProtectedPage() {
           This is a protected page that you can only see as an authenticated
           user
       </div> */}
-      <AgentToolbar user={supabaseUser}/>
+      <AgentToolbar user={supabaseUser} teamName={teamName}/>
       <div className="w-full p-6">
         <Workqueue user={supabaseUser}/>
       </div>
