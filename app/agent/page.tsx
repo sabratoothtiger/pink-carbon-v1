@@ -20,9 +20,8 @@ export default async function ProtectedPage() {
   const supabaseUser = user as SupabaseUser;
   
 
-  let { data: teamName, error } = await supabase
+  let { data: teamName } = await supabase
     .rpc('get_user_team_name')
-    console.log(teamName)
 
   return (
     <div className="flex-1 w-full flex flex-col ">
