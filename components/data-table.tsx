@@ -38,7 +38,7 @@ export default function Workqueue({ user }: WorkqueueProps) {
   const [showAddItemSidebar, setShowAddItemSidebar] = useState(false);    
 
   // Initialize the Supabase client on the client side
-  const supabase = createClient();
+  const supabase = await createClient();
   const { user_metadata } = user;
 
   const receivedStatusId = getReceivedStatusId();

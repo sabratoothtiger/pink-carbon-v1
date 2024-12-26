@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/client';
 
-const supabase = createClient();
+const supabase = await createClient();
 
 async function getWorkqueueData() {
   const { data, error } = await supabase.from('workqueue').select('*').order('position', { ascending: true });
