@@ -61,7 +61,11 @@ export const signInAction = async (formData: FormData) => {
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = createClient();
-  const origin = headers().get("origin");
+  // Await the headers object
+  const headersObject = await headers();
+
+  // Use `.get()` on the resolved headers
+  const origin = headersObject.get("origin");
   const callbackUrl = formData.get("callbackUrl")?.toString();
 
   if (!email) {
