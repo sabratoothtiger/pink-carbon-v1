@@ -10,7 +10,11 @@ export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const supabase = createClient();
-  const origin = headers().get("origin");
+  // Await the headers object
+  const headersObject = await headers();
+
+  // Use `.get()` on the resolved headers
+  const origin = headersObject.get("origin");
 
   if (!firstName || !email || !password) {
     return { error: "Name, email and password are required" };
