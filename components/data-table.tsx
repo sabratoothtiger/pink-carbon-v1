@@ -7,11 +7,10 @@ import {
   DataTableRowEditCompleteEvent,
 } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
-import { StatusItem, SupabaseUser, WorkqueueItem } from "@/types/supabase";
+import { ExtensionItem, StatusItem, SupabaseUser, WorkqueueItem } from "@/types/supabase";
 import { getAwaitingInfoStatusId, getCompletedStatusId, getExtendedStatusId, getMailedStatusId, getReceivedStatusId } from "@/utils/helpers";
 import { Tag } from "primereact/tag";
-import { getStatusData, getWorkqueueData } from "@/utils/supabase/fetch-data";
-import { InputSwitch } from "primereact/inputswitch";
+import { getExtensionData, getStatusData, getWorkqueueData } from "@/utils/supabase/fetch-data";
 import AddNewItemSidebar from "./add-new-workqueue-item";
 import { Button } from "primereact/button";
 import { ToggleButton } from "primereact/togglebutton";
@@ -28,6 +27,7 @@ interface WorkqueueProps {
 export default function Workqueue({ user }: WorkqueueProps) {
   const [items, setItems] = useState<WorkqueueItem[]>([]);
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
+  const [extensions, setExtensions] = useState<ExtensionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const isCellSelectable = (event: DataTableDataSelectableEvent) =>
     event.data.field === "identifier" || event.data.field === "last_updated_at"
@@ -35,11 +35,11 @@ export default function Workqueue({ user }: WorkqueueProps) {
       : true;
 
   const [showCompleted, setShowCompleted] = useState(false);
-  const [showAddItemSidebar, setShowAddItemSidebar] = useState(false);
+  const [showAddItemSidebar, setShowAddItemSidebar] = useState(false);    
 
   // Initialize the Supabase client on the client side
   const supabase = createClient();
-  const { user_metadata, email } = user;
+  const { user_metadata } = user;
 
   const receivedStatusId = getReceivedStatusId();
   const awaitingInfoStatusId = getAwaitingInfoStatusId();
@@ -54,6 +54,8 @@ export default function Workqueue({ user }: WorkqueueProps) {
       if (workqueueData) setItems(workqueueData);
       const statusData = await getStatusData();
       if (statusData) setStatuses(statusData);
+      const extensionData = await getExtensionData();
+      if (extensionData) setExtensions(extensionData);
       setLoading(false);
     }
 
@@ -77,11 +79,22 @@ export default function Workqueue({ user }: WorkqueueProps) {
     }
   };
 
+  const getExtensionSeverity = (extensionId: number | null) => {
+    if (extensionId) return "secondary";
+    else return null;
+  };
+
   function getStatusNameInternalById(statusId: number): string | null {
     const status = statuses.find((status) => status.id === statusId);
 
     return status ? status.name_internal : "Unknown Status";
   }
+
+  function getExtensionDateById(extensionDateId: number | null): string | null {
+    const extension = extensions.find((extension) => extension.id === extensionDateId);
+
+    return extension ? extension.name : "";
+  }  
 
   const statusBodyTemplate = (rowData: WorkqueueItem) => {
     return (
@@ -90,6 +103,18 @@ export default function Workqueue({ user }: WorkqueueProps) {
         severity={getSeverity(rowData.status_id)}
       />
     );
+  };
+  const extensionBodyTemplate = (rowData: WorkqueueItem) => {
+    if (rowData.extension_date_id) {
+    return (
+      <Tag
+        value={getExtensionDateById(rowData.extension_date_id)}
+        severity="danger"
+      />
+    );
+    } else {
+      return <></>
+    }
   };
 
   const receivedDateBodyTemplate = (rowData: WorkqueueItem) => {
@@ -133,6 +158,29 @@ export default function Workqueue({ user }: WorkqueueProps) {
           );
         }}
         optionLabel="name_internal" // This is the property to display in the dropdown
+        optionValue="id" // This is the property that will be used as the value
+      />
+    );
+  };
+
+  const extensionEditor = (options: ColumnEditorOptions) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={extensions} // Make sure this contains your status objects
+        onChange={(e: DropdownChangeEvent) => options.editorCallback!(e.value)} // Trigger editor callback on selection
+        placeholder="Select a date"
+        showClear
+        itemTemplate={(option: ExtensionItem) => {
+          // Custom template for each dropdown item
+          return (
+            <Tag
+              value={option.name}
+              severity={getExtensionSeverity(option.id)}
+            ></Tag>
+          );
+        }}
+        optionLabel="name" // This is the property to display in the dropdown
         optionValue="id" // This is the property that will be used as the value
       />
     );
@@ -212,7 +260,7 @@ export default function Workqueue({ user }: WorkqueueProps) {
       header: "Last updated on",
       body: updatedDateBodyTemplate,
     },
-    { field: "extension_date_id", header: "Extension date" },
+    { field: "extension_date_id", header: "Extension date", body: extensionBodyTemplate, editor: extensionEditor },
   ];
 
   let dynamicColumns = columns.map((col) => (
@@ -287,7 +335,7 @@ export default function Workqueue({ user }: WorkqueueProps) {
         <ProgressSpinner aria-label="Loading" className="flex justify-center" />
       ) : (
         <>
-          <div className="flex justify-between mb-2">
+        <div className="flex justify-between mb-2">
             <Button
               label="Add New Item"
               icon="pi pi-plus"
@@ -302,7 +350,6 @@ export default function Workqueue({ user }: WorkqueueProps) {
           </div>
           <DataTable
             value={filteredItems}
-            reorderableColumns
             reorderableRows
             onRowReorder={handleRowReorder}
             tableStyle={{ minWidth: "50rem" }}
@@ -311,8 +358,8 @@ export default function Workqueue({ user }: WorkqueueProps) {
             editMode="row"
             dataKey="id"
             onRowEditComplete={onRowEditComplete}
-          >
-            <Column rowReorder style={{ width: "3rem" }} />
+                      >
+            <Column rowReorder key="rowReorder" columnKey="rowReorder" style={{ width: "3rem" }} />
             {dynamicColumns}
           </DataTable>
 

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-export default function Login({ searchParams }: { searchParams: Message }) {
+export default function Login() {
   return (
     <div className="border-primary p-6">
       <form className="flex flex-col w-full max-w-sm">
@@ -37,7 +37,6 @@ export default function Login({ searchParams }: { searchParams: Message }) {
         <SubmitButton pendingText="Signing In..." formAction={signInAction}>
           Submit
         </SubmitButton>
-        <FormMessage message={searchParams} />
       </div>
     </form>
     </div>

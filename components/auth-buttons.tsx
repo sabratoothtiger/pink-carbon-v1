@@ -4,9 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 import { Badge } from "primereact/badge";
 
 export default async function AuthButtons() {
-  const {
-    data: { user },
-  } = await createClient().auth.getUser();
+  const supabase = await createClient()
+  const {data: { user }} = await supabase.auth.getUser();
 
   if (!hasEnvVars) {
     return (

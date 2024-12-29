@@ -5,6 +5,7 @@ import { Menu } from 'primereact/menu';
 import { MenuItem } from 'primereact/menuitem';
 import { Avatar } from 'primereact/avatar';
 import { SupabaseUser } from '@/types/supabase';
+import { signOutAction } from '@/app/actions';
 
 interface AgentToolbarProps {
     user: SupabaseUser;
@@ -27,7 +28,8 @@ export default function AvatarMenu({ user }: AgentToolbarProps) {
                 },
                 {
                     label: 'Sign out',
-                    icon: 'pi pi-sign-out'
+                    icon: 'pi pi-sign-out',
+                    command: () => signOutAction()
                 }
             ]
         }
