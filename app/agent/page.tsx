@@ -20,8 +20,9 @@ export default async function ProtectedPage() {
   const supabaseUser = user as SupabaseUser;
   
 
-  let { data: teamName } = await supabase
-    .rpc('get_user_team_name')
+  const { data, error } = await supabase.rpc('get_user_team_info');
+  let { team_id, team_name } = data;
+  if (!team_id) {team_id = 1}
 
   return (
     <div className="flex-1 w-full flex flex-col ">
@@ -31,9 +32,9 @@ export default async function ProtectedPage() {
           This is a protected page that you can only see as an authenticated
           user
       </div> */}
-      <AgentToolbar user={supabaseUser} teamName={teamName}/>
+      <AgentToolbar user={supabaseUser} teamName={team_name}/>
       <div className="w-full p-6">
-        <Workqueue user={supabaseUser}/>
+        <Workqueue user={supabaseUser} teamId={team_id}/>
       </div>
       {/* User details display */}
       {/* <div className="flex flex-col gap-2 items-start">

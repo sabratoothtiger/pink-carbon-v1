@@ -72,6 +72,9 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      clipPath: {
+        'custom-hero': 'polygon(10% 0, 100% 0, 100% 100%, 0 100%)',
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

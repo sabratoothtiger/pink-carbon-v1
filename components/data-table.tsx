@@ -19,12 +19,15 @@ import { format } from "date-fns";
 import { createClient } from "@/utils/supabase/client";
 import { InputText } from "primereact/inputtext";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import WorkqueueToolbar from "./workqueue/toolbar";
+import AddNewItemDialog from "./workqueue/add-item-dialog";
 
 interface WorkqueueProps {
   user: SupabaseUser;
+  teamId: number;
 }
 
-export default function Workqueue({ user }: WorkqueueProps) {
+export default function Workqueue({ user, teamId }: WorkqueueProps) {
   const [items, setItems] = useState<WorkqueueItem[]>([]);
   const [statuses, setStatuses] = useState<StatusItem[]>([]);
   const [extensions, setExtensions] = useState<ExtensionItem[]>([]);
@@ -320,6 +323,7 @@ export default function Workqueue({ user }: WorkqueueProps) {
         status_id: 1, // Default status_id "Received"
         received_at: newItem.received_at || new Date().toISOString(),
         position: newItem.position,
+        teamId: teamId,
       },
     ]);
     setShowAddItemSidebar(false);
@@ -331,23 +335,10 @@ export default function Workqueue({ user }: WorkqueueProps) {
 
   return (
     <div className="card">
+      <WorkqueueToolbar showCompleted={showCompleted} setShowCompleted={setShowCompleted} setShowAddItemSidebar={setShowAddItemSidebar} />
       {loading ? (
         <ProgressSpinner aria-label="Loading" className="flex justify-center" />
       ) : (
-        <>
-        <div className="flex justify-between mb-2">
-            <Button
-              label="Add New Item"
-              icon="pi pi-plus"
-              onClick={() => setShowAddItemSidebar(true)}
-            />
-            <ToggleButton
-              onLabel="Hide Completed"
-              offLabel="Show all"
-              checked={showCompleted}
-              onChange={(e) => setShowCompleted(e.value)}
-            />
-          </div>
           <DataTable
             value={filteredItems}
             reorderableRows
@@ -362,16 +353,15 @@ export default function Workqueue({ user }: WorkqueueProps) {
             <Column rowReorder key="rowReorder" columnKey="rowReorder" style={{ width: "3rem" }} />
             {dynamicColumns}
           </DataTable>
-
-          <AddNewItemSidebar
+      )}
+      <AddNewItemDialog
             visible={showAddItemSidebar}
             onHide={() => setShowAddItemSidebar(false)}
             onAddItem={handleAddItem}
             userId={user_metadata.sub}
+            teamId={teamId}
             supabase={supabase}
           />
-        </>
-      )}
     </div>
   );
 }
