@@ -29,6 +29,10 @@ body {
   color: var(--text-color-secondary); 
 }
 
+.p-button {
+  text-decoration: none;
+}
+
 .p-button-secondary {
   border: 2px solid var(--primary-color); /* Pink border */
   border-radius: 0.5rem; /* Rounded corners */
