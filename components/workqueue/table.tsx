@@ -78,8 +78,8 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     >
   >({});
   const [statusNames, setStatusNames] = useState<Record<number, string>>({});
-  const [completedStatusId, setCompletedStatusId] = useState<number | null>(null); 
-  const [extendedStatusId, setExtendedStatusId] = useState<number | null>(null); 
+  const [completedStatusId, setCompletedStatusId] = useState<number | null>(10); 
+  const [extendedStatusId, setExtendedStatusId] = useState<number | null>(6); 
   const [extensions, setExtensions] = useState<Record<number, string>>({});
   const toast = useRef<Toast>(null);
 
@@ -105,11 +105,12 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         if (statusColorData) setStatusColors(statusColorData);
         if (statusNameData) setStatusNames(statusNameData);
         if (extensionData) setExtensions(extensionData);
-        
+
+        /* 
         const _completedStatusId = findStatusId(statusNames, "completed");
         setCompletedStatusId(_completedStatusId);
         const _extendedStatusId = findStatusId(statusNames, "extended");
-        setExtendedStatusId(_extendedStatusId);
+        setExtendedStatusId(_extendedStatusId); */
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -120,6 +121,9 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
 
     fetchData();
   }, []);
+
+  const _completedStatusId = findStatusId(statusNames, "completed");
+  const _extendedStatusId = findStatusId(statusNames, "extended");
 
   // Find the id associated with the status
   function findStatusId(
