@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-export default function Header() {
+export default function Hero() {
 
     const [isMdScreen, setIsMdScreen] = useState(false);
 
@@ -23,11 +23,11 @@ export default function Header() {
 
   return (
     <div>
-      <div className="flex flex-col gap-16 items-center">
+      <div className="flex flex-col gap-8 items-center">
         {/* Grid container for layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 items-stretch surface-0 text-800 w-full gap-6 md:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-stretch surface-0 text-800 w-full">
           {/* Left Column: Text */}
-          <div className="p-6 text-center md:text-left flex flex-col items-center md:items-start">
+          <div className="p-2 text-center md:text-left flex flex-col items-center md:items-start">
             <section>
               <span className="block text-4xl md:text-6xl font-bold mb-4">
                 Custom management solutions delivered on{" "}
@@ -59,7 +59,7 @@ export default function Header() {
           </div>
 
           {/* Right Column: Image */}
-          <div className="overflow-hidden flex items-center justify-center">
+          <div className="overflow-hidden flex items-center justify-end">
             <img
               src="/assets/pink_carbon_hero.png"
               alt="pink-carbon-hero-image"

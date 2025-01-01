@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import { Toolbar } from "primereact/toolbar";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -8,23 +8,27 @@ import { ToggleButton } from "primereact/togglebutton";
 
 interface WorkqueueToolbarProps {
   showCompleted: boolean;
-  setShowCompleted: (value: boolean) => void;
-  setShowAddItemSidebar: (value: boolean) => void;
+  handleShowCompleted:() => void;
+  openNew: MouseEventHandler;
+  globalFilterValue: string;
+  onGlobalFilterChange: any;
 }
 
 export default function WorkqueueToolbar({
   showCompleted,
-  setShowCompleted,
-  setShowAddItemSidebar,
+  handleShowCompleted,
+  openNew,
+  globalFilterValue,
+  onGlobalFilterChange,
 }: WorkqueueToolbarProps) {
   const startContent = (
     <div className="mr-5 flex items-center gap-3">
-      <Button icon="pi pi-plus" onClick={() => setShowAddItemSidebar(true)} />
+      <Button icon="pi pi-plus" onClick={openNew} />
       <ToggleButton
         onLabel="Hide Completed"
         offLabel="Show all"
         checked={showCompleted}
-        onChange={(e) => setShowCompleted(e.value)}
+        onChange={handleShowCompleted}
       />
     </div>
   );
@@ -37,7 +41,7 @@ export default function WorkqueueToolbar({
     <React.Fragment>
       <IconField iconPosition="left">
       <InputIcon className="pi pi-search" />
-      <InputText placeholder="Search (no worky)" />
+      <InputText type="search" placeholder="Search" value={globalFilterValue} onChange={(e) => onGlobalFilterChange(e)}/>
     </IconField>
     </React.Fragment>
   );

@@ -1,5 +1,5 @@
 import AgentToolbar from "@/components/agent-toolbar";
-import Workqueue from "@/components/data-table";
+import WorkqueueTable from "@/components/workqueue/table";
 import { SupabaseUser } from "@/types/supabase";
 import { createClient } from "@/utils/supabase/server";
 import { InfoIcon } from "lucide-react";
@@ -21,8 +21,11 @@ export default async function ProtectedPage() {
   
 
   const { data, error } = await supabase.rpc('get_user_team_info');
-  let { team_id, team_name } = data;
-  if (!team_id) {team_id = 1}
+  const { team_id, team_name } = data;
+  team_id ? team_id : 1;
+
+  const { user_metadata } = user;
+  const userId = user_metadata.sub
 
   return (
     <div className="flex-1 w-full flex flex-col ">
@@ -33,8 +36,8 @@ export default async function ProtectedPage() {
           user
       </div> */}
       <AgentToolbar user={supabaseUser} teamName={team_name}/>
-      <div className="w-full p-6">
-        <Workqueue user={supabaseUser} teamId={team_id}/>
+      <div className="w-full p-6  h-[calc(100vh-170px)]">
+        <WorkqueueTable userId={userId} teamId={team_id}/>
       </div>
       {/* User details display */}
       {/* <div className="flex flex-col gap-2 items-start">

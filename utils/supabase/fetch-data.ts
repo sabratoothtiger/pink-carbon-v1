@@ -15,35 +15,55 @@ async function getWorkqueueData() {
   return data;
 }
 
-async function getStatusData() {
+async function getStatusData(): Promise<{
+  colorMap: Record<number, "success" | "info" | "secondary" | "contrast" | "warning" | "danger" | null>;
+  nameMap: Record<number, string>;
+}> {
   const supabase = createClient();
+
+  // Fetch the data from the "statuses" table
   const { data, error } = await supabase
     .from("statuses")
-    .select("*")
+    .select("id, severity_color, name_internal")
     .order("id", { ascending: true });
 
   if (error) {
-    console.error("Error fetching status data:", error);
-    return null;
+    console.error("Error fetching statuses:", error);
+    return { colorMap: {}, nameMap: {} };
   }
 
-  return data;
+  // Map the data into separate dictionaries
+  const colorMap: Record<number, "success" | "info" | "secondary" | "contrast" | "warning" | "danger" | null> = {};
+  const nameMap: Record<number, string> = {};
+
+  data.forEach(({ id, severity_color, name_internal }) => {
+    colorMap[id] = severity_color;
+    nameMap[id] = name_internal;
+  });
+
+  return { colorMap, nameMap };
 }
 
-async function getExtensionData() {
+async function getExtensionData(): Promise<Record<number, string>> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("extension_date_options")
-    .select("*")
+    .select("id, name")
     .order("id", { ascending: true });
 
   if (error) {
-    console.error("Error fetching status data:", error);
-    return null;
+    console.error("Error fetching extension data:", error);
+    return {};
   }
 
-  return data;
+  const extensionMap: Record<number, string> = {};
+  data?.forEach(({ id, name }) => {
+    extensionMap[id] = name;
+  });
+
+  return extensionMap;
 }
+
 
 async function getMaxItemPosition() {
   const supabase = createClient();
