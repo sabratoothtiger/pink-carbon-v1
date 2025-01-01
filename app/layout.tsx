@@ -1,13 +1,7 @@
-import type { Metadata } from "next";
 import { PrimeReactProvider } from "primereact/api";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "primereact/resources/themes/lara-dark-pink/theme.css";
-
-import HeaderAuth from "@/components/header-auth";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import AuthButtons from "@/components/auth-buttons";
 
 const inter = Inter({ subsets: ["latin"] });
 
