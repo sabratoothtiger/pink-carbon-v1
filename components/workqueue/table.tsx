@@ -66,7 +66,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
   const [items, setItems] = useState<WorkqueueItem[]>([]);
   const [itemDialog, setItemDialog] = useState<boolean>(false);
   const [deleteItemDialog, setDeleteItemDialog] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);    
   const [statusColors, setStatusColors] = useState<
     Record<
       number,
@@ -88,7 +88,6 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     useState<boolean>(true);
   const [returnYear, setReturnYear] = useState<number>(2024);
   const toast = useRef<Toast>(null);
-
   // Initialize the Supabase client on the client side
   const supabase = createClient();
 
@@ -116,6 +115,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         setCompletedStatusId(_completedStatusId);
         const _extendedStatusId = findStatusId(statusNames, "extended");
         setExtendedStatusId(_extendedStatusId); */
+
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -409,20 +409,22 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         newPosition++;
         return { ...item, position: newPosition };
       });
-
+  
       // Update positions in Supabase
       const { error: reorderError } = await supabase
-        .from("workqueue")
+        .from("workqueue") 
         .upsert(_reorderedItems);
-
+  
       if (reorderError) {
         throw reorderError;
       }
+
 
       setIsIdentifierAvailable(true);
       setItems(_reorderedItems);
       setItemDialog(false);
       setItem(emptyItem);
+
       toast.current?.show({
         severity: "success",
         summary: "Successful",
@@ -504,12 +506,12 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       if (reorderError) {
         throw reorderError;
       }
-
+  
       // Update local state and reset dialog/form
       setItems(_reorderedItems);
       setDeleteItemDialog(false);
       setItem(emptyItem);
-
+      
       // Show success message
       toast.current?.show({
         severity: "success",
@@ -519,7 +521,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     } catch (err) {
       console.error("Error deleting item or updating positions", err);
-
+      
       // Show error message
       toast.current?.show({
         severity: "error",
@@ -539,17 +541,17 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       newPosition++;
       return { ...item, position: newPosition };
     });
-
+    
     try {
       const { data, error } = await supabase
         .from("workqueue") // Replace with your actual table name
         .upsert(_items)
         .select();
-
+  
       if (error) {
         throw error;
       }
-
+  
       // Update items state and show success message
       setItems(_items);
       toast.current?.show({
@@ -560,7 +562,6 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     } catch (err) {
       console.error("Error recalculating positions:", err);
-
       // Show error toast
       toast.current?.show({
         severity: "error",
@@ -570,17 +571,17 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     }
   };
-
+  
   const handleShowCompleted: () => void = () => {
     setShowCompleted(!showCompleted);
     setFilters((prevFilters) => ({
       ...prevFilters,
       status_id: {
-        value: showCompleted ? completedStatusId : "", // Toggle between '' and completedStatusId
+        value: showCompleted ? completedStatusId : '', // Toggle between '' and completedStatusId
         matchMode: FilterMatchMode.NOT_EQUALS,
       },
     }));
-  };
+  };  
 
   const itemDialogFooter = (
     <React.Fragment>
@@ -609,6 +610,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       />
     </React.Fragment>
   );
+
 
   return (
     <div className="card">
