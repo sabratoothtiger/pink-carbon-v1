@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
-import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent } from "primereact/datatable";
+import {
+  DataTable,
+  DataTableFilterMeta,
+} from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { Tag } from "primereact/tag";
 import {
@@ -29,7 +32,7 @@ interface WorkqueueProps {
 }
 
 interface WorkqueueItem {
-  id: string | null;
+  id: string ;
   position: number | null;
   received_at: Date;
   last_updated_at: Date;
@@ -48,7 +51,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
   const [showCompleted, setShowCompleted] = useState(false);
   // Data elements
   let emptyItem: WorkqueueItem = {
-    id: null,
+    id: "",
     position: null,
     received_at: new Date(),
     last_updated_at: new Date(),
@@ -63,7 +66,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
   const [items, setItems] = useState<WorkqueueItem[]>([]);
   const [itemDialog, setItemDialog] = useState<boolean>(false);
   const [deleteItemDialog, setDeleteItemDialog] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState<boolean>(false);    
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const [statusColors, setStatusColors] = useState<
     Record<
       number,
@@ -78,11 +81,13 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     >
   >({});
   const [statusNames, setStatusNames] = useState<Record<number, string>>({});
-  const [completedStatusId, setCompletedStatusId] = useState<number | null>(10); 
-  const [extendedStatusId, setExtendedStatusId] = useState<number | null>(6); 
+  const [completedStatusId, setCompletedStatusId] = useState<number | null>(10);
+  const [extendedStatusId, setExtendedStatusId] = useState<number | null>(5);
   const [extensions, setExtensions] = useState<Record<number, string>>({});
+  const [isIdentifierAvailable, setIsIdentifierAvailable] =
+    useState<boolean>(true);
+  const [returnYear, setReturnYear] = useState<number>(2024);
   const toast = useRef<Toast>(null);
-
 
   // Initialize the Supabase client on the client side
   const supabase = createClient();
@@ -111,7 +116,6 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         setCompletedStatusId(_completedStatusId);
         const _extendedStatusId = findStatusId(statusNames, "extended");
         setExtendedStatusId(_extendedStatusId); */
-
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -138,12 +142,11 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     return -1;
   }
 
-  
-  const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+  const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     status_id: { value: 10, matchMode: FilterMatchMode.NOT_EQUALS },
-});
+  });
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFilters((prevFilters) => ({
@@ -288,35 +291,65 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     setDeleteItemDialog(false);
   };
 
+  const checkIsIdentifierAvailable = async (value: string) => {
+    try {
+      const { data, error } = await supabase.rpc("is_identifier_available", {
+        "p_identifier": value,
+        "p_return_year": returnYear,
+        "p_team_id": teamId,
+      });
+      setIsIdentifierAvailable(data);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error("Error checking identifier:", error);
+    }
+  };
+
   const saveItem = async () => {
     setSubmitted(true);
 
-    // Validation: Ensure extension date is selected when extended
-    if (item.status_id === extendedStatusId && !item.extension_date_id) {
+    // Validation: Ensure identifier is entered
+    if (!item.identifier) {
         toast.current?.show({
           severity: "error",
-          summary: "Validation Error",
-          detail: "Extension date is required for Extended status",
+          summary: "Error",
+          detail: "Identifier is required",
           life: 3000,
         });
         return;
       }
+    else {
+     checkIsIdentifierAvailable(item.identifier );
+     // Validation: Ensure identifier is available
+        if (!isIdentifierAvailable) {
+            toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Identifier is already in use",
+            life: 3000,
+            });
+            return;
+        }
+    }
 
-    // Validation: Ensure identifier exists
-    if (!item.identifier) {
+    // Validation: Ensure extension date is selected when extended
+    if (item.status_id === extendedStatusId && !item.extension_date_id) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "Identifier is required",
+        summary: "Validation Error",
+        detail: "Extension date is required for Extended status",
         life: 3000,
       });
       return;
     }
 
     if (item.status_id === completedStatusId) {
-        item.position = null
-    } else if (item.position = null) {
-        item.position = await getMaxItemPosition() + 1
+      item.position = null;
+    } else if ((item.position = null)) {
+      item.position = (await getMaxItemPosition()) + 1;
     }
 
     const trimmedIdentifier = item.identifier.trim();
@@ -346,7 +379,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
           life: 3000,
         });
       } else {
-        const {id, ..._itemWithoutId} = _item
+        const { id, ..._itemWithoutId } = _item;
         // Insert new item into Supabase
         const { data, error } = await supabase
           .from("workqueue")
@@ -376,19 +409,20 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         newPosition++;
         return { ...item, position: newPosition };
       });
-  
+
       // Update positions in Supabase
       const { error: reorderError } = await supabase
-        .from("workqueue") 
+        .from("workqueue")
         .upsert(_reorderedItems);
-  
+
       if (reorderError) {
         throw reorderError;
       }
 
+      setIsIdentifierAvailable(true);
       setItems(_reorderedItems);
       setItemDialog(false);
-      setItem(emptyItem); 
+      setItem(emptyItem);
       toast.current?.show({
         severity: "success",
         summary: "Successful",
@@ -444,14 +478,14 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         .from("workqueue")
         .delete()
         .eq("id", item.id);
-  
+
       if (error) {
         throw error;
       }
-  
+
       // Update local items by filtering out the deleted item
       const _items = items.filter((val) => val.id !== item.id);
-  
+
       // Recalculate positions
       let newPosition = 0;
       const _reorderedItems = _items.map((item) => {
@@ -461,21 +495,21 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
         newPosition++;
         return { ...item, position: newPosition };
       });
-  
+
       // Update positions in Supabase
       const { error: reorderError } = await supabase
-        .from("workqueue") 
+        .from("workqueue")
         .upsert(_reorderedItems);
-  
+
       if (reorderError) {
         throw reorderError;
       }
-  
+
       // Update local state and reset dialog/form
       setItems(_reorderedItems);
       setDeleteItemDialog(false);
       setItem(emptyItem);
-  
+
       // Show success message
       toast.current?.show({
         severity: "success",
@@ -485,7 +519,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     } catch (err) {
       console.error("Error deleting item or updating positions", err);
-  
+
       // Show error message
       toast.current?.show({
         severity: "error",
@@ -495,7 +529,6 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     }
   };
-  
 
   const handleRowReorder = async (rowData: WorkqueueItem[]) => {
     let newPosition = 0;
@@ -506,17 +539,17 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       newPosition++;
       return { ...item, position: newPosition };
     });
-  
+
     try {
       const { data, error } = await supabase
         .from("workqueue") // Replace with your actual table name
         .upsert(_items)
         .select();
-  
+
       if (error) {
         throw error;
       }
-  
+
       // Update items state and show success message
       setItems(_items);
       toast.current?.show({
@@ -527,7 +560,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     } catch (err) {
       console.error("Error recalculating positions:", err);
-  
+
       // Show error toast
       toast.current?.show({
         severity: "error",
@@ -537,17 +570,17 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       });
     }
   };
-  
+
   const handleShowCompleted: () => void = () => {
     setShowCompleted(!showCompleted);
     setFilters((prevFilters) => ({
       ...prevFilters,
       status_id: {
-        value: showCompleted ? completedStatusId : '', // Toggle between '' and completedStatusId
+        value: showCompleted ? completedStatusId : "", // Toggle between '' and completedStatusId
         matchMode: FilterMatchMode.NOT_EQUALS,
       },
     }));
-  };  
+  };
 
   const itemDialogFooter = (
     <React.Fragment>
@@ -576,25 +609,6 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
       />
     </React.Fragment>
   );
-
-  const [scrollHeight, setScrollHeight] = useState<string>("300px");
-
-  const calculateScrollHeight = () => {
-    
-    const availableHeight = Math.floor(window.innerHeight * 0.7);
-    setScrollHeight(`${availableHeight}px`);
-  };
-
-  useEffect(() => {
-    // Initial calculation
-    calculateScrollHeight();
-
-    // Update height on window resize
-    window.addEventListener("resize", calculateScrollHeight);
-    return () => {
-      window.removeEventListener("resize", calculateScrollHeight);
-    };
-  }, []);
 
   return (
     <div className="card">
@@ -644,15 +658,14 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
           stripedRows
           reorderableRows
           scrollable
-          scrollHeight={scrollHeight}
+          scrollHeight="62vh"
           onRowReorder={(e) => handleRowReorder(e.value)}
           dataKey="id"
           filters={filters}
-          globalFilterFields={['identifier','notes','status_id']}
+          globalFilterFields={["identifier", "notes", "status_id"]}
           paginator
           rows={30}
-
-        responsiveLayout="scroll"
+          responsiveLayout="scroll"
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} items"
         >
@@ -690,21 +703,22 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
             id="identifier"
             value={item.identifier}
             onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d{0,4}$/.test(value)) { // Allow only up to 4 digits
-                  onInputChange(e, "identifier");
-                }}}
+              onInputChange(e, "identifier");
+            }}
             required
             autoFocus
-            maxLength={4}
-            className={classNames({ "p-invalid": submitted && !item.identifier })}
           />
+          {!submitted && (
+            <small id="identifier-help" className="text-gray-500">
+              Enter the unique identifier for the tax filing
+            </small>
+          )}
 
-<small id="identifier-help" className="text-gray-500">
-            Enter the four-digit unique identifier for the tax filing
-          </small>
           {submitted && !item.identifier && (
-            <small className="p-error">Identifier is required.</small>
+            <small className="p-error">Identifier is required</small>
+          )}
+          {submitted && !isIdentifierAvailable && (
+            <small className="p-error">Identifier is already taken</small>
           )}
         </div>
 
@@ -757,9 +771,11 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
               optionValue="id"
               className={classNames({ "p-invalid": submitted && !item.name })}
             />
-            {submitted && (item.status_id === extendedStatusId && !item.extension_date_id) && (
-              <small className="p-error">Extension date is required.</small>
-            )}
+            {submitted &&
+              item.status_id === extendedStatusId &&
+              !item.extension_date_id && (
+                <small className="p-error">Extension date is required</small>
+              )}
           </div>
         </div>
 
