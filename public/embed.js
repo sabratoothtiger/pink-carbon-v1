@@ -8,3 +8,9 @@
     method: 'GET',
     });
     const scriptContent = await response.text();
+
+    // Dynamically inject the script into the page
+    const script = document.createElement('script');
+    script.textContent = scriptContent;
+    document.head.appendChild(script);
+})();
