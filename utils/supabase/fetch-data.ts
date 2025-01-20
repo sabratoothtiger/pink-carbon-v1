@@ -36,7 +36,7 @@ async function getStatusData(): Promise<{
   const colorMap: Record<number, "success" | "info" | "secondary" | "contrast" | "warning" | "danger" | null> = {};
   const nameMap: Record<number, string> = {};
 
-  data.forEach(({ id, severity_color, name_internal }) => {
+  data?.forEach(({ id, severity_color, name_internal }) => {
     colorMap[id] = severity_color;
     nameMap[id] = name_internal;
   });

@@ -21,12 +21,12 @@ body {
   font-size: 1.75rem;
 }
 .pink-text {
-  color: var(--primary-color); 
+  color: var(--primary-color);
 }.pink-avatar {
-  background-color: var(--primary-color); 
+  background-color: var(--primary-color);
 }
 .carbon-text {
-  color: var(--text-color-secondary); 
+  color: var(--text-color-secondary);
 }
 
 .p-button {
@@ -34,20 +34,20 @@ body {
 }
 
 .p-button-secondary {
-  border: 2px solid var(--primary-color); /* Pink border */
-  border-radius: 0.5rem; /* Rounded corners */
+  border: 2px solid var(--primary-color);
+  border-radius: 0.5rem;
   color: white;
-  background-color: var(--surface-a); 
+  background-color: var(--surface-a);
 }
 
 .p-button-secondary:hover {
-  background-color: var(--secondary-color); /* Match hover color */
-  color: white; /* White text color */
-  border-color: var(--secondary-color); /* Maintain pink border color */
+  background-color: var(--secondary-color);
+  color: white;
+  border-color: var(--secondary-color);
 }
 
 .border-primary {
-  border: 2px solid var(--primary-color); /* Pink border */
-  border-radius: 0.5rem; /* Rounded corners */
+  border: 2px solid var(--primary-color);
+  border-radius: 0.5rem;
   background-color: var(--surface-a);
 }

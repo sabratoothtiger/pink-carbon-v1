@@ -19,6 +19,7 @@
 # misc
 .DS_Store
 *.pem
+.vscode
 
 # debug
 npm-debug.log*
@@ -26,12 +27,13 @@ yarn-debug.log*
 yarn-error.log*
 launch.json
 
-# local env files
+# env files
 .env*.local
 .env
 
-# vercel
+# dev
 .vercel
+.vscode
 
 # typescript
 *.tsbuildinfo
