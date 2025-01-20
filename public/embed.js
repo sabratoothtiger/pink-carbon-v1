@@ -4,7 +4,7 @@
     const subdomain = scriptTag.getAttribute('data-subdomain');
 
    // Add the subdomain as a query parameter
-   const response = await fetch(`http://pinkcarbon.app/api/widget?subdomain=${encodeURIComponent(subdomain)}`, {
+   const response = await fetch(`https://pinkcarbon.app/api/widget?subdomain=${encodeURIComponent(subdomain)}`, {
     method: 'GET',
     });
     const scriptContent = await response.text();
