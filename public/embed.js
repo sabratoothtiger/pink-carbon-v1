@@ -1,7 +1,7 @@
 (async function () {
-  document.addEventListener("DOMContentLoaded", () => {
-    const scriptTag = Array.from(document.getElementsByTagName("script")).pop();
-    const subdomain = scriptTag.getAttribute("data-subdomain");
+    document.addEventListener("DOMContentLoaded", () => {
+    const scriptTag = Array.from(document.getElementsByTagName("script")).find(script => script.hasAttribute("data-pc-subdomain"));
+    scriptTag ? subdomain = scriptTag.getAttribute("data-pc-subdomain") : null;
     const lastYear = new Date().getFullYear() - 1;
 
     const style = document.createElement("style");
