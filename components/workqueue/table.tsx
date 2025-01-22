@@ -349,7 +349,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     if (item.status_id === completedStatusId) {
       item.position = null;
     } else if ((item.position = null)) {
-      item.position = (await getMaxItemPosition()) + 1;
+      item.position = (await getMaxItemPosition(teamId)) + 1;
     }
 
     const trimmedIdentifier = item.identifier.trim();
