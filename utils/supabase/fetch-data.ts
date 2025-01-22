@@ -65,9 +65,9 @@ async function getExtensionData(): Promise<Record<number, string>> {
 }
 
 
-async function getMaxItemPosition() {
+async function getMaxItemPosition(teamId: number) {
   const supabase = createClient();
-  const { data, error } = await supabase.rpc("get_max_position");
+  const { data, error } = await supabase.rpc("get_max_position_by_team", {teamId});
 
   if (error) {
     console.error("Error fetching position:", error);
