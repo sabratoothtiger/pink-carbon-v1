@@ -2,7 +2,6 @@ import AgentToolbar from "@/components/agent-toolbar";
 import WorkqueueTable from "@/components/workqueue/table";
 import { SupabaseUser } from "@/types/supabase";
 import { createClient } from "@/utils/supabase/server";
-import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 
 export default async function ProtectedPage() {

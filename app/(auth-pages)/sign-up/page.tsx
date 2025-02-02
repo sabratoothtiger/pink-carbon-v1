@@ -1,9 +1,7 @@
 import { signUpAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { InputText } from "primereact/inputtext";
 
 export default function Signup() {
   return (
@@ -17,12 +15,12 @@ export default function Signup() {
           </Link>
         </p>
         <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-          <Label htmlFor="firstName">First name</Label>
-          <Input name="firstName" placeholder="" required />
-          <Label htmlFor="email">Email</Label>
-          <Input name="email" placeholder="" required />
-          <Label htmlFor="password">Password</Label>
-          <Input
+          <label htmlFor="firstName">First name</label>
+          <InputText name="firstName" placeholder="" required />
+          <label htmlFor="email">Email</label>
+          <InputText name="email" placeholder="" required />
+          <label htmlFor="password">Password</label>
+          <InputText
             type="password"
             name="password"
             placeholder=""
