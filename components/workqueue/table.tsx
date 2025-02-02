@@ -5,7 +5,7 @@ import {
   DataTable,
   DataTableFilterMeta,
 } from "primereact/datatable";
-import { Column, ColumnEditorOptions } from "primereact/column";
+import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import {
   getExtensionData,
@@ -95,7 +95,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [
+        let [
           workqueueData,
           { colorMap: statusColorData, nameMap: statusNameData },
           extensionData,
@@ -262,7 +262,6 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     />
   ));
 
-  // UPDATES
   const findIndexById = (id: string) => {
     let index = -1;
 

@@ -23,7 +23,7 @@ export default function NotFound() {
                     <span className="pink-text">404 Error:</span> This page has evaporated into thin air!</h1>
                     <p>
                         Let’s{" "}
-                        <Link href="https://jmfcpallc.pinkcarbon.app">
+                        <Link href="https://pinkcarbon.app">
                                 get back
                         </Link>{" "}
                         to a stable connection.
