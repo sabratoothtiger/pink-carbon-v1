@@ -666,6 +666,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
           globalFilterFields={["identifier", "notes", "status_id"]}
           paginator
           rows={30}
+          rowsPerPageOptions={[30, 50, 100, 250, 500]}
           responsiveLayout="scroll"
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} items"
