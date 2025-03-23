@@ -10,6 +10,7 @@ import { Tag } from "primereact/tag";
 import {
   getExtensionData,
   getMaxItemPosition,
+  getMaxExternalQueuePosition,
   getStatusData,
   getWorkqueueData,
 } from "@/utils/supabase/fetch-data";
@@ -34,6 +35,7 @@ interface WorkqueueProps {
 interface WorkqueueItem {
   id: string ;
   position: number | null;
+  external_queue_position: number | null;
   received_at: Date;
   last_updated_at: Date;
   last_updated_by: string;
@@ -53,6 +55,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
   let emptyItem: WorkqueueItem = {
     id: "",
     position: null,
+    external_queue_position: null,
     received_at: new Date(),
     last_updated_at: new Date(),
     last_updated_by: userId,
@@ -83,6 +86,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
   const [statusNames, setStatusNames] = useState<Record<number, string>>({});
   const [completedStatusId, setCompletedStatusId] = useState<number | null>(10);
   const [extendedStatusId, setExtendedStatusId] = useState<number | null>(5);
+  const [receivedStatusId, setReceivedStatusId] = useState<number | null>(1);
   const [extensions, setExtensions] = useState<Record<number, string>>({});
   const [isIdentifierAvailable, setIsIdentifierAvailable] =
     useState<boolean>(true);
@@ -229,6 +233,7 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
     body?: (rowData: WorkqueueItem) => JSX.Element | string;
   }[] = [
     { field: "position", header: "Position" },
+    { field: "external_queue_position", header: "Client View Position" },
     { field: "identifier", header: "Identifier" },
     {
       field: "status_id",
@@ -347,8 +352,13 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
 
     if (item.status_id === completedStatusId) {
       item.position = null;
-    } else if ((item.position = null)) {
+      item.external_queue_position = null;
+    } else if ((item.status_id === receivedStatusId) && (item.position = null)) {
       item.position = (await getMaxItemPosition(teamId)) + 1;
+      item.external_queue_position = (await getMaxExternalQueuePosition(teamId)) + 1;
+    } else if (item.position = null) {
+      item.position = (await getMaxItemPosition(teamId)) + 1;
+      item.external_queue_position = null;
     }
 
     const trimmedIdentifier = item.identifier.trim();
@@ -401,12 +411,18 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
 
       // Recalculate positions
       let newPosition = 0;
+      let newExternalQueuePosition = 0;
       const _reorderedItems = _items.map((item) => {
         if (item.status_id === completedStatusId) {
-          return { ...item, position: null }; // Keep position null for completed items
+          return { ...item, position: null, external_queue_position: null }; // Keep position null for completed items
+        }
+        if (item.status_id === receivedStatusId) {
+          newPosition++;
+          newExternalQueuePosition++;
+          return { ...item, position: newPosition, external_queue_position: newExternalQueuePosition };
         }
         newPosition++;
-        return { ...item, position: newPosition };
+        return { ...item, position: newPosition, external_queue_position: null };
       });
   
       // Update positions in Supabase
@@ -489,9 +505,15 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
 
       // Recalculate positions
       let newPosition = 0;
+      let newExternalQueuePosition = 0;
       const _reorderedItems = _items.map((item) => {
         if (item.status_id === completedStatusId) {
           return { ...item, position: null }; // Keep position null for completed items
+        }
+        if (item.status_id === receivedStatusId) {
+          newPosition++;
+          newExternalQueuePosition++;
+          return { ...item, position: newPosition, external_queue_position: newExternalQueuePosition };
         }
         newPosition++;
         return { ...item, position: newPosition };
@@ -533,12 +555,18 @@ export default function WorkqueueTable({ userId, teamId }: WorkqueueProps) {
 
   const handleRowReorder = async (rowData: WorkqueueItem[]) => {
     let newPosition = 0;
+    let newExternalQueuePosition = 0;
     const _items = rowData.map((item) => {
       if (item.status_id === completedStatusId) {
-        return { ...item, position: null };
+        return { ...item, position: null, external_queue_position: null };
+      }
+      if (item.status_id === receivedStatusId) {
+        newPosition++;
+        newExternalQueuePosition++;
+        return { ...item, position: newPosition, external_queue_position: newExternalQueuePosition };
       }
       newPosition++;
-      return { ...item, position: newPosition };
+      return { ...item, position: newPosition, external_queue_position: null  };
     });
     
     try {

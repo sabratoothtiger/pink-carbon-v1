@@ -77,9 +77,22 @@ async function getMaxItemPosition(teamId: number) {
   return data;
 }
 
+async function getMaxExternalQueuePosition(teamId: number) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("get_max_external_queue_position_by_team", {teamId});
+
+  if (error) {
+    console.error("Error fetching queue position:", error);
+    return;
+  }
+
+  return data;
+}
+
 export {
   getWorkqueueData,
   getStatusData,
   getExtensionData,
   getMaxItemPosition,
+  getMaxExternalQueuePosition
 };
