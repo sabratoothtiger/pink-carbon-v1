@@ -1,6 +1,7 @@
 import Footer from '@/components/home-page/footer';
 import Header from '@/components/home-page/header';
 import Link from 'next/link';
+import Image from 'next/image';
 import React from 'react';
 
 export default function NotFound() {
@@ -10,10 +11,13 @@ export default function NotFound() {
             <div className="flex flex-col md:flex-row items-center justify-center md:justify-between text-center md:text-left px-6 py-10">
                 {/* Left Column: Image */}
                 <div className="md:w-1/2 flex justify-center md:justify-end mb-6 md:mb-0">
-                    <img
+                    <Image
                         src="/assets/pink_carbon_404.png"
                         alt="pink-carbon-not-found"
                         className="w-3/4 max-w-sm transform scale-y-50"
+                        width={400}
+                        height={300}
+                        priority={false}
                     />
                 </div>
 

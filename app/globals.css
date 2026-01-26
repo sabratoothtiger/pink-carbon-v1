@@ -12,21 +12,14 @@ body {
   background-color: var(--surface-a);
   font-family: var(--font-family);
   color: var(--text-color);
+  
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.brand-name {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  font-size: 1.75rem;
-}
-.pink-text {
-  color: var(--primary-color);
-}.pink-avatar {
+.pink-avatar {
   background-color: var(--primary-color);
-}
-.carbon-text {
-  color: var(--text-color-secondary);
 }
 
 .p-button {
@@ -50,4 +43,12 @@ body {
   border: 2px solid var(--primary-color);
   border-radius: 0.5rem;
   background-color: var(--surface-a);
+}
+
+/* Utility class for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

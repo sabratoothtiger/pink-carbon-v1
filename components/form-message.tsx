@@ -5,19 +5,21 @@ export type Message =
 
 export function FormMessage({ message }: { message: Message }) {
   return (
-    <div className="flex flex-col gap-2 w-full max-w-md text-sm">
+    <div className="flex flex-col gap-2 w-full text-sm">
       {"success" in message && (
-        <div className="text-foreground border-l-2 border-foreground px-4">
+        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
           {message.success}
         </div>
       )}
       {"error" in message && (
-        <div className="text-destructive-foreground border-l-2 border-destructive-foreground px-4">
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
           {message.error}
         </div>
       )}
       {"message" in message && (
-        <div className="text-foreground border-l-2 px-4">{message.message}</div>
+        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg">
+          {message.message}
+        </div>
       )}
     </div>
   );
