@@ -17,6 +17,7 @@ import {
 } from "@/lib/supabase/fetch-data";
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/client";
+import { formatLocalizedDate, formatLocalizedDateTime, formatDateForInput, convertInputDateToUTC, getCurrentUTC } from "@/utils/utils";
 import { InputText } from "primereact/inputtext";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import WorkqueueToolbar from "./toolbar";
@@ -58,8 +59,8 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
     id: "",
     position: null,
     external_queue_position: null,
-    received_at: new Date(),
-    last_updated_at: new Date(),
+    received_at: getCurrentUTC(),
+    last_updated_at: getCurrentUTC(),
     last_updated_by: userId,
     identifier: "",
     status_id: 1,
@@ -226,20 +227,13 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
 
   const receivedDateBodyTemplate = (rowData: WorkqueueItem) => {
     return rowData.received_at
-      ? format(new Date(rowData.received_at), "MM/dd/yyyy")
+      ? formatLocalizedDate(rowData.received_at, 'short')
       : "";
   };
 
   const updatedDateBodyTemplate = (rowData: WorkqueueItem) => {
     return rowData.last_updated_at
-      ? new Date(rowData.last_updated_at).toLocaleString(undefined, {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZoneName: 'short'
-        })
+      ? formatLocalizedDateTime(rowData.last_updated_at)
       : "";
   };
 
@@ -399,7 +393,12 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
 
     const trimmedIdentifier = item.identifier.trim();
     const _items = [...items];
-    const _item = { ...item, identifier: trimmedIdentifier };
+    const _item = { 
+      ...item, 
+      identifier: trimmedIdentifier,
+      last_updated_at: getCurrentUTC(),
+      last_updated_by: userId
+    };
 
     try {
       if (item.id) {
@@ -493,9 +492,9 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
   ) => {
     const val = (e.target && e.target.value) || "";
     
-    // Handle date fields
+    // Handle date fields - convert to UTC for storage
     if (name === 'received_at' && val) {
-      setItem({ ...item, [name]: new Date(val) });
+      setItem({ ...item, [name]: convertInputDateToUTC(val) });
     } else {
       setItem({ ...item, [name]: val });
     }
@@ -738,7 +737,7 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
                       <div className="flex items-center space-x-1 min-w-0">
                         <InputText
                           type="date"
-                          value={editingValues[data.id]?.received_at ?? format(new Date(data.received_at), 'yyyy-MM-dd')}
+                          value={editingValues[data.id]?.received_at ?? formatDateForInput(data.received_at)}
                           onChange={(e) => setEditingValues(prev => ({
                             ...prev,
                             [data.id]: { ...prev[data.id], received_at: e.target.value }
@@ -752,7 +751,7 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
                     ) : (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-100">
-                          {data.received_at ? format(new Date(data.received_at), "MMM dd, yyyy") : "N/A"}
+                          {data.received_at ? formatLocalizedDate(data.received_at, 'long') : "N/A"}
                         </span>
                         <Button icon="pi pi-pencil" size="small" text severity="info" onClick={() => startEdit(data, 'received_at')} />
                       </div>
@@ -988,14 +987,7 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
         {/* Footer - Last Updated Info */}
         <div className="mt-3 pt-2 border-t border-gray-700">
           <div className="text-xs text-gray-500 text-left">
-            Last updated {data.last_updated_at ? new Date(data.last_updated_at).toLocaleString(undefined, {
-              year: 'numeric',
-              month: 'short',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZoneName: 'short'
-            }) : "N/A"} by {data.last_updated_by}
+            Last updated {data.last_updated_at ? formatLocalizedDateTime(data.last_updated_at) : "N/A"} by {data.last_updated_by}
           </div>
         </div>
       </div>
@@ -1045,7 +1037,7 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
       ...editingValues,
       [rowData.id]: {
         ...editingValues[rowData.id],
-        [field]: field === 'received_at' ? format(new Date(rowData.received_at), 'yyyy-MM-dd') : rowData[field]
+        [field]: field === 'received_at' ? formatDateForInput(rowData.received_at) : rowData[field]
       }
     });
   };
@@ -1059,13 +1051,13 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
       const newValue = editingValues[rowData.id]?.[field];
       let updateData: any = { 
         [field]: newValue,
-        last_updated_at: new Date(),
+        last_updated_at: getCurrentUTC(),
         last_updated_by: userId
       };
 
-      // Handle date conversion
+      // Handle date conversion - convert to UTC for storage
       if (field === 'received_at') {
-        updateData[field] = new Date(newValue);
+        updateData[field] = convertInputDateToUTC(newValue);
       }
 
       // Update in Supabase
@@ -1300,7 +1292,7 @@ export default function WorkqueueTable({ userId, accountId, selectedItemId }: Wo
                     <InputText
                       id="received_at"
                       type="date"
-                      value={item.received_at ? format(new Date(item.received_at), 'yyyy-MM-dd') : ''}
+                      value={item.received_at ? formatDateForInput(item.received_at) : ''}
                       onChange={(e) => onInputChange(e, "received_at")}
                       className="text-sm"
                     />
