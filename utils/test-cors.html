@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API CORS Test - Status Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 API CORS Test Widget</h1>
+        <p>Test the get_status_by_identifier API to verify CORS headers are working correctly.</p>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label for="apiUrl">API Base URL:</label>
+                <input type="text" id="apiUrl" value="http://localhost:3000" placeholder="http://localhost:3000">
+            </div>
+            
+            <div class="form-group">
+                <label for="subdomain">Subdomain:</label>
+                <input type="text" id="subdomain" placeholder="Enter subdomain" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="returnYear">Return Year:</label>
+                <input type="text" id="returnYear" placeholder="e.g., 2024" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="identifier">Identifier (4-digit number):</label>
+                <input type="text" id="identifier" placeholder="e.g., 1234" required>
+            </div>
+            
+            <button type="submit" id="submitBtn">🚀 Test API Call</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const apiUrl = document.getElementById('apiUrl').value;
+            const subdomain = document.getElementById('subdomain').value;
+            const returnYear = document.getElementById('returnYear').value;
+            const identifier = document.getElementById('identifier').value;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const result = document.getElementById('result');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Testing...';
+            result.style.display = 'block';
+            result.className = 'result loading';
+            result.innerHTML = '<strong>Making API request...</strong><br>Testing CORS headers...';
+            
+            try {
+                // Construct the API URL
+                const url = new URL(`${apiUrl}/api/v1/get_status_by_identifier`);
+                url.searchParams.append('subdomain', subdomain);
+                url.searchParams.append('return_year', returnYear);
+                url.searchParams.append('identifier', identifier);
+                
+                console.log('Making request to:', url.toString());
+                
+                const startTime = Date.now();
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.className = 'result success';
+                    result.innerHTML = `
+                        <strong>✅ SUCCESS - CORS is working!</strong><br>
+                        <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>Response Time:</strong> ${responseTime}ms<br>
+                        <strong>CORS Headers Detected:</strong><br>
+                        • Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin') || 'Not set'}<br>
+                        • Access-Control-Allow-Methods: ${response.headers.get('Access-Control-Allow-Methods') || 'Not set'}<br>
+                        <strong>Response Data:</strong>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `
+                        <strong>❌ API Error (but CORS worked!)</strong><br>
+                        <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>Response Time:</strong> ${responseTime}ms<br>
+                        <strong>Error:</strong>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                
+            } catch (error) {
+                result.className = 'result error';
+                if (error.name === 'TypeError' && error.message.includes('CORS')) {
+                    result.innerHTML = `
+                        <strong>❌ CORS ERROR DETECTED</strong><br>
+                        <strong>Error:</strong> ${error.message}<br>
+                        <p>This indicates that CORS headers are not properly configured.</p>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <strong>❌ Request Failed</strong><br>
+                        <strong>Error:</strong> ${error.message}<br>
+                        <strong>Error Type:</strong> ${error.name}
+                    `;
+                }
+                console.error('Request failed:', error);
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Test API Call';
+            }
+        });
+
+        // Test CORS preflight separately
+        async function testPreflight() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            try {
+                const response = await fetch(`${apiUrl}/api/v1/get_status_by_identifier`, {
+                    method: 'OPTIONS',
+                });
+                console.log('Preflight response:', response.status, response.statusText);
+                console.log('Preflight headers:', [...response.headers.entries()]);
+            } catch (error) {
+                console.error('Preflight failed:', error);
+            }
+        }
+
+        // Auto-populate some test data
+        window.addEventListener('load', function() {
+            document.getElementById('subdomain').value = 'test';
+            document.getElementById('returnYear').value = '2024';
+            document.getElementById('identifier').value = '1234';
+        });
+    </script>
+</body>
+</html>
