@@ -1,6 +1,4 @@
-import { createClient } from "@/lib/supabase/client";
-
-const supabase = createClient();
+import { createClient } from "@/lib/supabase/server";
 
 // CORS headers
 const corsHeaders = {
@@ -24,6 +22,7 @@ export async function GET(request) {
   const identifier = url.searchParams.get("identifier");
 
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase.rpc("get_status_by_identifier", {
       subdomain: subdomain,
       return_year: return_year,
