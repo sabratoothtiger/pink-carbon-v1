@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import Link from "next/link";
 import { SupabaseUser } from "@/lib/supabase/types";
 import AuthenticatedShell from "@/components/navigation_shell/authenticated-shell";
+import WorkqueueExport from "@/components/admin/workqueue-export";
 
 interface AdminPageProps {
   params: Promise<{
@@ -48,6 +49,8 @@ export default async function AdminPage({ params }: AdminPageProps) {
     return redirect("/account");
   }
 
+  const accountDisplayName = accountData.display_name;
+
   function AdminContent() {
     return (
       <div className="max-w-6xl mx-auto">
@@ -90,22 +93,16 @@ export default async function AdminPage({ params }: AdminPageProps) {
             />
           </div>
 
-          {/* Reports */}
+          {/* Exports */}
           <div className="bg-surface-a border border-surface-border rounded-lg p-6">
             <div className="flex items-center gap-3 mb-4">
-              <i className="pi pi-chart-bar text-pink-500 text-2xl" />
-              <h3 className="text-lg font-semibold text-primary">Reports</h3>
+              <i className="pi pi-download text-pink-500 text-2xl" />
+              <h3 className="text-lg font-semibold text-primary">Exports</h3>
             </div>
             <p className="text-text-secondary text-sm mb-4">
-              Generate and view reports for this organization.
+              Export workqueue data to CSV.
             </p>
-            <Button 
-              label="View Reports" 
-              icon="pi pi-arrow-right" 
-              iconPos="right"
-              className="p-button-sm w-full"
-              disabled
-            />
+            <WorkqueueExport accountId={parseInt(accountId)} accountName={accountDisplayName} />
           </div>
 
           {/* Billing */}
