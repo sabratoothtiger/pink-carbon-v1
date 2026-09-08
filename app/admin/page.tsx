@@ -19,7 +19,7 @@ export default async function GlobalAdminPage() {
   // Get all accounts for the user
   const { data: accountUsersData, error: accountUsersError } = await supabase
     .from('account_users')
-    .select('account_id')
+    .select('account_id, role')
     .eq('user_id', user.id);
 
   if (accountUsersError || !accountUsersData || accountUsersData.length === 0) {
@@ -29,6 +29,7 @@ export default async function GlobalAdminPage() {
 
   // Get account details
   const accountIds = accountUsersData.map(au => au.account_id);
+  const roleByAccountId = new Map(accountUsersData.map(au => [au.account_id, au.role]));
   const { data: accountsData, error: accountsError } = await supabase
     .from('accounts')
     .select('id, display_name, created_at')
@@ -126,19 +127,21 @@ export default async function GlobalAdminPage() {
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/account/account/${account.id}/workqueue`} className="flex-1">
-                    <Button 
-                      label="Workqueue" 
-                      icon="pi pi-list" 
+                    <Button
+                      label="Workqueue"
+                      icon="pi pi-list"
                       className="p-button-sm w-full p-button-secondary"
                     />
                   </Link>
-                  <Link href={`/account/account/${account.id}/admin`} className="flex-1">
-                    <Button 
-                      label="Admin" 
-                      icon="pi pi-cog" 
-                      className="p-button-sm w-full"
-                    />
-                  </Link>
+                  {roleByAccountId.get(account.id) === 'admin' && (
+                    <Link href={`/account/account/${account.id}/admin`} className="flex-1">
+                      <Button
+                        label="Admin"
+                        icon="pi pi-cog"
+                        className="p-button-sm w-full"
+                      />
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}

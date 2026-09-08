@@ -27,7 +27,7 @@ export default async function AdminPage({ params }: AdminPageProps) {
   // Verify user has access to this account
   const { data: accountUserData, error: accountUserError } = await supabase
     .from('account_users')
-    .select('account_id')
+    .select('account_id, role')
     .eq('user_id', user.id)
     .eq('account_id', accountId)
     .single();
@@ -35,6 +35,14 @@ export default async function AdminPage({ params }: AdminPageProps) {
   if (accountUserError || !accountUserData) {
     console.error('User does not have access to this account:', accountUserError);
     return redirect("/account");
+  }
+
+  // Only admins can view this account's admin page. This must be enforced
+  // here (not just by hiding the nav link) since a staff user could
+  // otherwise reach it directly by URL.
+  if (accountUserData.role !== 'admin') {
+    console.error('User does not have admin access to this account');
+    return redirect(`/account/${accountId}/workqueue`);
   }
 
   // Get account details
@@ -164,7 +172,7 @@ export default async function AdminPage({ params }: AdminPageProps) {
   }
 
   return (
-    <AuthenticatedShell>
+    <AuthenticatedShell accountId={accountId} requireAccountAccess={true}>
       <AdminContent />
     </AuthenticatedShell>
   );

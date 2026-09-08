@@ -30,7 +30,7 @@ export default async function AuthenticatedShell({
   // Fetch all user account access data in one query
   const { data: accountUsersData, error: accountUsersError } = await supabase
     .from('account_users')
-    .select('account_id')
+    .select('account_id, role')
     .eq('user_id', user.id);
 
   if (accountUsersError) {
@@ -49,6 +49,11 @@ export default async function AuthenticatedShell({
     }
   }
 
+  // The user's role (admin/staff) for the account context we're in, if any
+  const currentAccountRole = accountId
+    ? accountUsersData?.find(au => au.account_id === parseInt(accountId))?.role ?? null
+    : null;
+
   // Fetch current account data if we're in an account context
   let currentAccount = null;
   if (accountId) {
@@ -62,11 +67,12 @@ export default async function AuthenticatedShell({
   }
 
   return (
-    <Shell 
-      user={supabaseUser} 
+    <Shell
+      user={supabaseUser}
       hasMultipleAccounts={hasMultipleAccounts}
       currentAccount={currentAccount}
       userAccountIds={userAccountIds}
+      currentAccountRole={currentAccountRole}
     >
       {children}
     </Shell>

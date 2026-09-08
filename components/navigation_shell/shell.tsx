@@ -19,9 +19,10 @@ interface ShellProps {
   hasMultipleAccounts?: boolean
   currentAccount?: { id: string; display_name: string } | null
   userAccountIds?: number[]
+  currentAccountRole?: string | null
 }
 
-export default function Shell({ children, user, hasMultipleAccounts = false, currentAccount = null, userAccountIds = [] }: ShellProps) {
+export default function Shell({ children, user, hasMultipleAccounts = false, currentAccount = null, userAccountIds = [], currentAccountRole = null }: ShellProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarVisible, setSidebarVisible] = useState(false)
@@ -49,7 +50,7 @@ export default function Shell({ children, user, hasMultipleAccounts = false, cur
       ]
     }
 
-    return [
+    const items = [
       {
         label: 'Dashboard',
         icon: 'pi pi-chart-bar',
@@ -60,12 +61,18 @@ export default function Shell({ children, user, hasMultipleAccounts = false, cur
         icon: 'pi pi-list',
         command: () => router.push(`/account//${accountId}/workqueue`)
       },
-      {
+    ]
+
+    // Only admins can see/reach the account's Admin page.
+    if (currentAccountRole === 'admin') {
+      items.push({
         label: 'Admin',
         icon: 'pi pi-cog',
         command: () => router.push(`/account/${accountId}/admin`)
-      }
-    ]
+      })
+    }
+
+    return items
   }
 
   const menuItems = getMenuItems()
