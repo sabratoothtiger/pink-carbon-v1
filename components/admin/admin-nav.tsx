@@ -33,7 +33,7 @@ export default function AdminNav({ accountId }: AdminNavProps) {
     // (components/navigation_shell/shell.tsx), styled as an inset panel to
     // match the card language used elsewhere on this page.
     <nav
-      className="w-56 flex-shrink-0 self-start rounded-lg border border-solid border-[var(--surface-border)] bg-[var(--surface-a)] p-3"
+      className="w-56 flex-shrink-0 self-start rounded-lg border border-solid border-surface-border bg-surface-a p-3"
       aria-label="Admin sections"
     >
       <ul className="flex flex-col gap-1">
@@ -64,7 +64,7 @@ export default function AdminNav({ accountId }: AdminNavProps) {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2",
                   isActive
                     ? "bg-pink-500/10 text-pink-500"
-                    : "text-white/60 hover:bg-white/5 hover:text-white"
+                    : "text-text-secondary hover:bg-white/5 hover:text-white"
                 )}
               >
                 <i className={item.icon} />

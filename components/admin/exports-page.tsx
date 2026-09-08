@@ -152,7 +152,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
   };
 
   return (
-    <div className="max-w-2xl rounded-lg border border-solid border-[var(--surface-border)] bg-[var(--surface-a)] p-6">
+    <div className="max-w-2xl rounded-lg border border-solid border-surface-border bg-surface-a p-6">
       <Toast ref={toast} position="bottom-left" />
       <div className="flex items-center gap-3 mb-6">
         <i className="pi pi-download text-pink-500 text-2xl" />
@@ -161,7 +161,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
 
       <div className="space-y-6">
         <div>
-          <label htmlFor="export-year" className="text-xs font-medium text-white/60 block mb-1">
+          <label htmlFor="export-year" className="text-xs font-medium text-text-secondary block mb-1">
             Return Year
           </label>
           <Dropdown
@@ -190,7 +190,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-medium text-white/60">Columns</label>
+            <label className="text-xs font-medium text-text-secondary">Columns</label>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -208,7 +208,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-md border border-solid border-[var(--surface-border)] p-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-md border border-solid border-surface-border p-3">
             {WORKQUEUE_EXPORT_COLUMNS.map((col) => (
               <div key={col.key} className="flex items-center gap-2">
                 <Checkbox
@@ -225,7 +225,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
         </div>
 
         <div>
-          <label className="text-xs font-medium text-white/60 block mb-2">Format</label>
+          <label className="text-xs font-medium text-text-secondary block mb-2">Format</label>
           <SelectButton
             value={exportFormat}
             options={FORMAT_OPTIONS}

@@ -52,6 +52,24 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // PrimeReact's dark theme (app/globals.css imports
+        // primereact/resources/themes/lara-dark-pink) defines these as
+        // plain CSS custom properties, but nothing wired them into
+        // Tailwind - so bg-surface-a, border-surface-border, and
+        // text-text-secondary (already used throughout the app) were
+        // compiling to nothing. Map them to the real values so those
+        // classes actually work, and stay in sync if the theme changes.
+        surface: {
+          a: "var(--surface-a)",
+          b: "var(--surface-b)",
+          c: "var(--surface-c)",
+          d: "var(--surface-d)",
+          border: "var(--surface-border)",
+          hover: "var(--surface-hover)",
+        },
+        text: {
+          secondary: "var(--text-color-secondary)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
