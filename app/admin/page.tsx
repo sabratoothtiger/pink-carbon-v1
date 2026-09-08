@@ -126,7 +126,7 @@ export default async function GlobalAdminPage() {
                   Created {new Date(account.created_at).toLocaleDateString()}
                 </div>
                 <div className="flex gap-2">
-                  <Link href={`/account/account/${account.id}/workqueue`} className="flex-1">
+                  <Link href={`/account/${account.id}/workqueue`} className="flex-1">
                     <Button
                       label="Workqueue"
                       icon="pi pi-list"
@@ -134,7 +134,7 @@ export default async function GlobalAdminPage() {
                     />
                   </Link>
                   {roleByAccountId.get(account.id) === 'admin' && (
-                    <Link href={`/account/account/${account.id}/admin`} className="flex-1">
+                    <Link href={`/account/${account.id}/admin`} className="flex-1">
                       <Button
                         label="Admin"
                         icon="pi pi-cog"

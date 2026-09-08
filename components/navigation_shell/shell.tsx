@@ -59,7 +59,7 @@ export default function Shell({ children, user, hasMultipleAccounts = false, cur
       {
         label: 'Workqueue',
         icon: 'pi pi-list',
-        command: () => router.push(`/account//${accountId}/workqueue`)
+        command: () => router.push(`/account/${accountId}/workqueue`)
       },
     ]
 
