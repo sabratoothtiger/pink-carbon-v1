@@ -152,16 +152,16 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
   };
 
   return (
-    <div className="bg-surface-a border border-surface-border rounded-lg p-6 max-w-2xl">
+    <div className="max-w-2xl rounded-lg border border-solid border-[var(--surface-border)] bg-[var(--surface-a)] p-6">
       <Toast ref={toast} position="bottom-left" />
       <div className="flex items-center gap-3 mb-6">
         <i className="pi pi-download text-pink-500 text-2xl" />
-        <h2 className="text-lg font-semibold text-primary">Export Workqueue</h2>
+        <h2 className="text-lg font-semibold text-white/[.87]">Export Workqueue</h2>
       </div>
 
       <div className="space-y-6">
         <div>
-          <label htmlFor="export-year" className="text-xs font-medium text-text-secondary block mb-1">
+          <label htmlFor="export-year" className="text-xs font-medium text-white/60 block mb-1">
             Return Year
           </label>
           <Dropdown
@@ -183,32 +183,32 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
             checked={includeCompleted}
             onChange={(e) => setIncludeCompleted(e.checked ?? false)}
           />
-          <label htmlFor="export-include-completed" className="text-sm text-primary">
+          <label htmlFor="export-include-completed" className="text-sm text-white/[.87]">
             Include completed items
           </label>
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-medium text-text-secondary">Columns</label>
+            <label className="text-xs font-medium text-white/60">Columns</label>
             <div className="flex gap-3">
               <button
                 type="button"
                 onClick={selectAllColumns}
-                className="text-xs text-pink-500 hover:underline"
+                className="text-xs text-pink-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 rounded"
               >
                 Select all
               </button>
               <button
                 type="button"
                 onClick={selectNoColumns}
-                className="text-xs text-pink-500 hover:underline"
+                className="text-xs text-pink-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 rounded"
               >
                 Select none
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 border border-surface-border rounded-md p-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-md border border-solid border-[var(--surface-border)] p-3">
             {WORKQUEUE_EXPORT_COLUMNS.map((col) => (
               <div key={col.key} className="flex items-center gap-2">
                 <Checkbox
@@ -216,7 +216,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
                   checked={selectedColumns.includes(col.key)}
                   onChange={() => toggleColumn(col.key)}
                 />
-                <label htmlFor={`export-col-${col.key}`} className="text-sm text-primary">
+                <label htmlFor={`export-col-${col.key}`} className="text-sm text-white/[.87] cursor-pointer">
                   {col.label}
                 </label>
               </div>
@@ -225,7 +225,7 @@ export default function ExportsPage({ accountId, accountName }: ExportsPageProps
         </div>
 
         <div>
-          <label className="text-xs font-medium text-text-secondary block mb-2">Format</label>
+          <label className="text-xs font-medium text-white/60 block mb-2">Format</label>
           <SelectButton
             value={exportFormat}
             options={FORMAT_OPTIONS}

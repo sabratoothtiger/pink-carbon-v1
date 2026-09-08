@@ -15,12 +15,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
       {/* Admin Content Placeholder */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Users Management */}
-        <div className="bg-surface-a border border-surface-border rounded-lg p-6">
+        <div className="bg-[var(--surface-a)] border border-solid border-[var(--surface-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <i className="pi pi-users text-pink-500 text-2xl" />
-            <h3 className="text-lg font-semibold text-primary">Users</h3>
+            <h3 className="text-lg font-semibold text-white/[.87]">Users</h3>
           </div>
-          <p className="text-text-secondary text-sm mb-4">
+          <p className="text-white/60 text-sm mb-4">
             Manage user access and permissions for this organization.
           </p>
           <Button
@@ -33,12 +33,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </div>
 
         {/* Settings */}
-        <div className="bg-surface-a border border-surface-border rounded-lg p-6">
+        <div className="bg-[var(--surface-a)] border border-solid border-[var(--surface-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <i className="pi pi-cog text-pink-500 text-2xl" />
-            <h3 className="text-lg font-semibold text-primary">Settings</h3>
+            <h3 className="text-lg font-semibold text-white/[.87]">Settings</h3>
           </div>
-          <p className="text-text-secondary text-sm mb-4">
+          <p className="text-white/60 text-sm mb-4">
             Configure organization settings and preferences.
           </p>
           <Button
@@ -51,12 +51,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </div>
 
         {/* Exports */}
-        <div className="bg-surface-a border border-surface-border rounded-lg p-6">
+        <div className="bg-[var(--surface-a)] border border-solid border-[var(--surface-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <i className="pi pi-download text-pink-500 text-2xl" />
-            <h3 className="text-lg font-semibold text-primary">Exports</h3>
+            <h3 className="text-lg font-semibold text-white/[.87]">Exports</h3>
           </div>
-          <p className="text-text-secondary text-sm mb-4">
+          <p className="text-white/60 text-sm mb-4">
             Export workqueue data to CSV or Excel.
           </p>
           <Link href={`/account/${accountId}/admin/exports`}>
@@ -70,12 +70,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </div>
 
         {/* Billing */}
-        <div className="bg-surface-a border border-surface-border rounded-lg p-6">
+        <div className="bg-[var(--surface-a)] border border-solid border-[var(--surface-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <i className="pi pi-credit-card text-pink-500 text-2xl" />
-            <h3 className="text-lg font-semibold text-primary">Billing</h3>
+            <h3 className="text-lg font-semibold text-white/[.87]">Billing</h3>
           </div>
-          <p className="text-text-secondary text-sm mb-4">
+          <p className="text-white/60 text-sm mb-4">
             Manage billing and subscription information.
           </p>
           <Button
@@ -88,12 +88,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </div>
 
         {/* API Keys */}
-        <div className="bg-surface-a border border-surface-border rounded-lg p-6">
+        <div className="bg-[var(--surface-a)] border border-solid border-[var(--surface-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <i className="pi pi-key text-pink-500 text-2xl" />
-            <h3 className="text-lg font-semibold text-primary">API Keys</h3>
+            <h3 className="text-lg font-semibold text-white/[.87]">API Keys</h3>
           </div>
-          <p className="text-text-secondary text-sm mb-4">
+          <p className="text-white/60 text-sm mb-4">
             Manage API keys and integrations.
           </p>
           <Button
@@ -106,12 +106,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
         </div>
 
         {/* Audit Log */}
-        <div className="bg-surface-a border border-surface-border rounded-lg p-6">
+        <div className="bg-[var(--surface-a)] border border-solid border-[var(--surface-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <i className="pi pi-list text-pink-500 text-2xl" />
-            <h3 className="text-lg font-semibold text-primary">Audit Log</h3>
+            <h3 className="text-lg font-semibold text-white/[.87]">Audit Log</h3>
           </div>
-          <p className="text-text-secondary text-sm mb-4">
+          <p className="text-white/60 text-sm mb-4">
             View activity and change history.
           </p>
           <Button
